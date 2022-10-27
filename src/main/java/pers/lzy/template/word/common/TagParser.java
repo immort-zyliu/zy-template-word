@@ -1,5 +1,8 @@
 package pers.lzy.template.word.common;
 
+import pers.lzy.template.word.utils.ReUtils;
+
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -14,7 +17,20 @@ public class TagParser {
      */
     private static final Pattern TAG_PATTERN = Pattern.compile("(<|[</])([\\d\\w\\s-_]+?)>");
 
-  /*  *//**
+    /**
+     * 从内容中获取第一个标签
+     *
+     * @param content 内容
+     */
+    public static String findFirstTag(String content) {
+        List<String> tagList = ReUtils.findAll(TAG_PATTERN, content, 2);
+        if (tagList.size() == 0) {
+            return null;
+        }
+        return tagList.get(0);
+    }
+
+    /*  *//**
      * 判断内容中是否含有指定的标签
      *
      * @return true：是，false：不是

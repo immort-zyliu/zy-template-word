@@ -65,7 +65,7 @@ public class PatternPool {
     /**
      * Pattern池
      */
-    private static final pers.lzy.template.excel.common.SimpleCache<RegexWithFlag, Pattern> POOL = new pers.lzy.template.excel.common.SimpleCache<>();
+    private static final SimpleCache<RegexWithFlag, Pattern> POOL = new SimpleCache<>();
 
     /**
      * 先从Pattern池中查找正则对应的{@link Pattern}，找不到则编译正则表达式并入池。

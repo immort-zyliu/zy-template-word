@@ -25,7 +25,7 @@ public class WordUtil {
      *
      * @param paragraph 段落
      */
-    private static void mergeRunText(XWPFParagraph paragraph) {
+    public static void mergeRunText(XWPFParagraph paragraph) {
 
         // 获取段落的合并字符串
         String text = paragraph.getText();

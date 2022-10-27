@@ -1,7 +1,7 @@
 package pers.lzy.template.word.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import pers.lzy.template.excel.common.PatternPool;
+import pers.lzy.template.word.common.PatternPool;
 
 import java.util.ArrayList;
 import java.util.Collection;
