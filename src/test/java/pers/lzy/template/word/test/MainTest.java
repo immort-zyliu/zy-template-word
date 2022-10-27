@@ -24,13 +24,12 @@ public class MainTest {
         XWPFDocument doc = new XWPFDocument(fileInputStream);
 
 
-        writeFile(doc, new File("C:\\Users\\immort\\Desktop\\fff\\123132.docx"));
-
         DefaultTemplateWordFiller.Builder builder = TemplateWordFillerFactory.defaultTemplateWordFillerBuilder();
 
         DefaultTemplateWordFiller defaultTemplateWordFiller = builder.build();
 
-
         defaultTemplateWordFiller.fillData(doc, new HashMap<>());
+
+        writeFile(doc, new File("C:\\Users\\immort\\Desktop\\fff\\123132.docx"));
     }
 }

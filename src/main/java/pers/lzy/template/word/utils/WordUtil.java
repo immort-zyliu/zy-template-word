@@ -20,6 +20,28 @@ public class WordUtil {
 
     private static final Logger log = LoggerFactory.getLogger(WordUtil.class);
 
+    public static void setRunValue(XWPFRun run, Object value) {
+
+        if (value == null) {
+            run.setText(null, 0);
+            return;
+        }
+
+        // 填充数据
+        run.setText(value.toString(), 0);
+    }
+
+    /**
+     * 清空段落 内容
+     *
+     * @param paragraph 段落
+     */
+    public static void cleanParagraphContent(XWPFParagraph paragraph) {
+        for (XWPFRun run : paragraph.getRuns()) {
+            run.setText(null, 0);
+        }
+    }
+
     /**
      * 合并段落中的runs
      *
@@ -70,7 +92,7 @@ public class WordUtil {
      * des:表末尾添加行(表，要复制样式的行，添加行数，插入的行下标索引)
      *
      * @param table          被操作下表格
-     * @param sourceRowIndex         被复制的行
+     * @param sourceRowIndex 被复制的行
      * @param rows           要插入几行?
      * @param insertRowIndex 在那行后面进行插入?
      */

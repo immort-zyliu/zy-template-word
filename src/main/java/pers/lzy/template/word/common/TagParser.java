@@ -1,5 +1,7 @@
 package pers.lzy.template.word.common;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import pers.lzy.template.word.utils.ReUtils;
 
 import java.util.List;
@@ -30,18 +32,34 @@ public class TagParser {
         return tagList.get(0);
     }
 
-    /*  *//**
+    public static String parseRunTagContent(XWPFRun run, String tagName) {
+        if (run == null) {
+            return null;
+        }
+
+        // 获取单元格中的所有内容
+        String value = run.text();
+        // 获取指定标签的内容
+        String parsedValue = parseParamByTag(value, tagName);
+        // 如果是空，说明不是 simple-eval标签，则不处理
+        if (StringUtils.isEmpty(parsedValue)) {
+            return null;
+        }
+        return parsedValue;
+    }
+
+    /**
      * 判断内容中是否含有指定的标签
      *
      * @return true：是，false：不是
-     *//*
+     */
     public static String parseParamByTag(String content, String tagName) {
         // 构造正则
         String regStr = String.format("<%s>(.+)</%s>", tagName, tagName);
         // 只匹配第一个，因为我们只认第一个
         return ReUtils.get(regStr, content, 1);
     }
-
+/*
     public static String parseCellTagContent(Cell cell, String tagName) {
         if (cell == null) {
             return null;
