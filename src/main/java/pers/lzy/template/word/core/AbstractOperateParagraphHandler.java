@@ -12,6 +12,8 @@ import pers.lzy.template.word.exception.OperateWordHandlerInitException;
 import java.util.List;
 import java.util.Map;
 
+import static pers.lzy.template.word.common.TagParser.verifyHasExpression;
+
 /**
  * @author immort-liuzyj(zyliu)
  * @since 2022/2/24  13:43
@@ -54,8 +56,8 @@ public abstract class AbstractOperateParagraphHandler implements OperateParagrap
         for (XWPFRun run : runs) {
             String expression = run.text();
             // 说明没有解析出来表达式，不需要本handler处理。
-            if (StringUtils.isBlank(expression)) {
-                return;
+            if (!verifyHasExpression(expression)) {
+                continue;
             }
             // 说明需要本handler 处理。，则调用目标方法进行处理
             this.doOperate(document, run, params, expression, expressionCalculator);

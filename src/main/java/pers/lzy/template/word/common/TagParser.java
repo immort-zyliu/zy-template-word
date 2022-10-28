@@ -9,6 +9,7 @@ import pers.lzy.template.word.utils.ReUtils;
 import pers.lzy.template.word.utils.WordUtil;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static pers.lzy.template.word.utils.WordUtil.insertRunAndCopyStyle;
@@ -29,6 +30,18 @@ public class TagParser {
 
     private static final Pattern TAG_PATTERN_2 = Pattern.compile("^\\s*<(.+?)>:");
 
+    private static final Pattern EXPRESSION_PATTERN = Pattern.compile("\\$\\{\\s*?(.+?)\\s*}");
+
+    /**
+     * 开始寻找表达式起始节点的标志
+     */
+    private static final int START_PHASE_FLAG = 0;
+
+    /**
+     * 正在寻找表达式结束（拼接表达式）的标志
+     */
+    private static final int FIND_PHASE_FLAG = 1;
+
     /**
      * 将tag name 还原成原始的tag
      *
@@ -39,6 +52,24 @@ public class TagParser {
 
         return "<" + tagName + ">:";
     }
+
+    /**
+     * 校验里面是否含有 表达式 ${xxxx}
+     *
+     * @param content 内容
+     * @return 结果true:含有，false：不含有
+     */
+    public static boolean verifyHasExpression(String content) {
+
+        if (content == null) {
+            return false;
+        }
+
+        Matcher matcher = EXPRESSION_PATTERN.matcher(content);
+
+        return matcher.find();
+    }
+
 
     /**
      * 从内容中获取第一个标签
@@ -94,10 +125,6 @@ public class TagParser {
         }
         return tagName;
     }
-
-    private static final int START_PHASE_FLAG = 0;
-
-    private static final int FIND_PHASE_FLAG = 1;
 
     /**
      * 整理段落，使得表达式在一个run中，避免出现表达式在不同的run中导致的表达式解析出错。
@@ -211,27 +238,6 @@ public class TagParser {
                 preChar = outCurrentChar;
             }
         }
-
-        // 遍历所有的 run,
-
-        // 遍历 run 中的字符
-        // 找到 表达式开始字符$
-        // 如果$不是run的最后一个字符
-        // 查找开始字符的下一个字符是不是{
-        // 如果是{则表达式开始寻找记录
-        // 如不是，则放弃记录
-        // 如果$ 是run最后的一个字符
-        // 找寻下一个run,如过下一个run的第一个字符，
-        //则开始寻找结束，跳到后面
-        // 如不是，则放弃记录
-
-
-        // 寻找记录
-        // 依次遍历每个字符，查看字符是不是}
-        // 如果是，则表达式记录完毕，放入 $ 所在的run中
-        // 如果此run后续还有，则复制出来一个run(格式复制此run的)，将剩余字符放入新run中
-        // 将run插入到 $所在run的后面。
-        // 遍历删除废弃的run
 
     }
 

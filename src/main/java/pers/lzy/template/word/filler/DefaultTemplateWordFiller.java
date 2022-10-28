@@ -11,8 +11,10 @@ import pers.lzy.template.word.anno.TagOperateHandler;
 import pers.lzy.template.word.calculator.Jxel3ExpressionCalculator;
 import pers.lzy.template.word.common.TagParser;
 import pers.lzy.template.word.constant.CommonDataNameConstant;
+import pers.lzy.template.word.core.DocumentParagraphFiller;
 import pers.lzy.template.word.core.ExpressionCalculator;
 import pers.lzy.template.word.core.TemplateWordFiller;
+import pers.lzy.template.word.core.filler.DefaultDocumentParagraphFiller;
 import pers.lzy.template.word.core.handler.OperateParagraphHandler;
 import pers.lzy.template.word.core.handler.OperateTableCellHandler;
 import pers.lzy.template.word.core.holder.OperateParagraphHandlerHolder;
@@ -31,9 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static pers.lzy.template.word.common.TagParser.formatExpressionInMultiRuns;
-import static pers.lzy.template.word.utils.WordUtil.mergeRunText;
-
 /**
  * @author immort-liuzyj(zyliu)
  * @since 2022/10/27  16:54
@@ -41,6 +40,11 @@ import static pers.lzy.template.word.utils.WordUtil.mergeRunText;
 public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultTemplateWordFiller.class);
+
+    /**
+     * 文档段落填充器
+     */
+    private final DocumentParagraphFiller documentParagraphFiller;
 
     /**
      * 表达式计算器
@@ -73,6 +77,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
         this.operateParagraphHandlerTagMap = builder.operateParagraphHandlerTagMap;
         this.operateTableCellHandlerTagMap = builder.operateTableCellHandlerTagMap;
+        this.documentParagraphFiller = DefaultDocumentParagraphFiller.getInstance(operateParagraphHandlerTagMap, this.expressionCalculator);
     }
 
     /**
@@ -160,63 +165,11 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
             return;
         }
 
-        for (XWPFParagraph paragraph : paras) {
-            doProcessParagraph(document, paragraph, paramData);
-        }
+        paras.forEach(paragraph -> doProcessParagraph(document, paragraph, paramData));
     }
 
     private void doProcessParagraph(XWPFDocument document, XWPFParagraph paragraph, Map<String, Object> paramData) {
-
-        if (paragraph == null) {
-            return;
-        }
-
-        String paragraphText = paragraph.getText();
-        if (StringUtils.isNotEmpty(paragraphText)) {
-            // 获取content中的标签
-            String tagName = TagParser.findContentTag(paragraphText);
-            if (tagName == null) {
-                return;
-            }
-
-            // 通过tag找到handler
-            OperateParagraphHandler operateParagraphHandler = this.operateParagraphHandlerTagMap.get(tagName);
-            if (operateParagraphHandler == null) {
-                logger.warn("No tag({}) handler found, skipped", tagName);
-                return;
-            }
-
-            // 去掉 段落中的 tagName (tag 标识)
-            TagParser.removeTagName(paragraph, tagName);
-
-
-            // 格式化 碎片 run
-            formatExpressionInMultiRuns(paragraph);
-
-
-            // 调用handler对cell进行处理
-            operateParagraphHandler.operate(document, paragraph, paramData, this.expressionCalculator);
-
-        }
-
-        /*String content = run.text();
-        if (StringUtils.isNotEmpty(run.text())) {
-            // 获取content中的标签
-            String tagName = TagParser.findFirstTag(content);
-            if (tagName == null) {
-                return;
-            }
-
-            // 通过tag找到handler
-            OperateParagraphHandler operateParagraphHandler = this.operateParagraphHandlerTagMap.get(tagName);
-            if (operateParagraphHandler == null) {
-                logger.warn("No tag({}) handler found, skipped", tagName);
-                return;
-            }
-
-            // 调用handler对cell进行处理
-            operateParagraphHandler.operate(document, run, paramData, this.expressionCalculator);
-        }*/
+        documentParagraphFiller.doProcessParagraph(document, paragraph, paramData);
     }
 
     /**
