@@ -306,4 +306,76 @@ public class TagParser {
 
     }
 
+
+
+    /**
+     * 到这里，我们就已经默认您的段落满足tagName的要求，如果不满足，调用此方法会出错.
+     *
+     * @param paragraphs 段落
+     * @param tagName   要移除的 tagName
+     */
+    public static void removeTagName(List<XWPFParagraph> paragraphs, String tagName) {
+        String tagFlag = restoreTag(tagName);
+        int tagFlagLength = tagFlag.length();
+        boolean breakFlag = false;
+        boolean startFlag = false;
+
+        for (XWPFParagraph paragraph : paragraphs) {
+            List<XWPFRun> runs = paragraph.getRuns();
+            if (runs == null) {
+                return;
+            }
+
+            for (XWPFRun run : runs) {
+                StringBuilder sb = new StringBuilder();
+                String runText = run.text();
+                if (runText != null) {
+                    for (int i = 0; i < runText.length(); i++) {
+                        char curChar = runText.charAt(i);
+
+                        // 如果是空格，还没有开启，则跳过
+                        if ((Character.isSpaceChar(curChar) || Character.isWhitespace(curChar)) && !startFlag) {
+                            sb.append(curChar);
+                            continue;
+                        }
+
+                        // 如果不是空格，则需要开启
+                        startFlag = true;
+
+                        if (tagFlagLength <= 0) {
+                            // 说明需要将此run剩下的字符撞到sb中，然后重新设置进去
+                            sb.append(curChar);
+                            // 说明下一个run不用进行循环了，设置break为true
+                            breakFlag = true;
+                        }
+
+                        if (tagFlagLength >= 0) {
+                            // 大于等于0了，就没有必要-- 了
+                            tagFlagLength--;
+                        }
+                    }
+                    if (tagFlagLength == 0) {
+                        // 说明下一个run不用进行循环了，设置break为true
+                        breakFlag = true;
+                    }
+
+                    // 遍历完成，将过滤后的字符放入run中
+                    run.setText(sb.toString(), 0);
+                }
+
+                if (breakFlag) {
+                    break;
+                }
+            }
+            if (breakFlag) {
+                break;
+            }
+
+
+        }
+
+
+
+    }
+
 }

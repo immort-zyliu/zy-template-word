@@ -20,8 +20,7 @@ import pers.lzy.template.word.core.handler.OperateTableCellHandler;
 import pers.lzy.template.word.core.holder.OperateParagraphHandlerHolder;
 import pers.lzy.template.word.core.holder.OperateTableCellHandlerHolder;
 import pers.lzy.template.word.exception.OperateWordHandlerInitException;
-import pers.lzy.template.word.pojo.ArrInfo;
-import pers.lzy.template.word.pojo.MergeArrInfo;
+import pers.lzy.template.word.pojo.*;
 import pers.lzy.template.word.provider.DocumentProvider;
 import pers.lzy.template.word.provider.FillDataProvider;
 import pers.lzy.template.word.provider.FunctionProvider;
@@ -32,6 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static pers.lzy.template.word.constant.CommonDataNameConstant.ARR_HISTORY;
+import static pers.lzy.template.word.constant.CommonDataNameConstant.ARR_HISTORY_ITEM;
 
 /**
  * @author immort-liuzyj(zyliu)
@@ -110,35 +112,70 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
             return;
         }
 
-        for (XWPFTable table : tables) {
+        WordTable wordTable;
+        WordRow wordRow;
+        WordCell wordCell;
+
+        for (int tableIndex = 0; tableIndex < tables.size(); tableIndex++) {
+            XWPFTable table = tables.get(tableIndex);
+            wordTable = new WordTable(tableIndex, table);
+
             List<XWPFTableRow> rows = table.getRows();
+
+            // 初始化当前表格 所用参数
+            initCurrentTableParam(paramData, tableIndex);
+
+
             if (rows == null) {
                 continue;
             }
 
-            for (XWPFTableRow row : rows) {
+            for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
+                XWPFTableRow row = rows.get(rowIndex);
+                wordRow = new WordRow(rowIndex, row);
+
                 List<XWPFTableCell> tableCells = row.getTableCells();
                 if (tableCells == null) {
                     return;
                 }
 
-                for (XWPFTableCell cell : tableCells) {
+                for (int cellIndex = 0; cellIndex < tableCells.size(); cellIndex++) {
+                    XWPFTableCell cell = tableCells.get(cellIndex);
+                    wordCell = new WordCell(cellIndex, cell);
+
                     if (cell != null) {
-                        doProcessCell(document, table, row, cell, paramData);
+                        doProcessCell(document, wordTable, wordRow, wordCell, paramData);
                     }
                 }
+
             }
+
         }
 
     }
 
-    private void doProcessCell(XWPFDocument document, XWPFTable table, XWPFTableRow row, XWPFTableCell cell, Map<String, Object> paramData) {
+    /**
+     * 初始化当前表格所用参数
+     *
+     * @param paramData  全局数据
+     * @param tableIndex 当前表格索引
+     */
+    private void initCurrentTableParam(Map<String, Object> paramData, int tableIndex) {
+        Map<String, ArrInfo> tableArrItemInfo = new HashMap<>();
+        @SuppressWarnings("unchecked")
+        Map<Integer, Map<String, ArrInfo>> arrAyHistory = (Map<Integer, Map<String, ArrInfo>>) paramData.get(ARR_HISTORY);
+        arrAyHistory.put(tableIndex, tableArrItemInfo);
+        // 设置当前表格的 使用的 arr的history
+        paramData.put(ARR_HISTORY_ITEM, tableArrItemInfo);
+    }
+
+    private void doProcessCell(XWPFDocument document, WordTable table, WordRow row, WordCell cell, Map<String, Object> paramData) {
 
         // 获取cell中的内容
-        String content = cell.getText();
+        String content = cell.getCell().getText();
         if (StringUtils.isNotBlank(content)) {
             // 获取content中的标签
-            String tagName = TagParser.findFirstTag(content);
+            String tagName = TagParser.findContentTag(content);
             if (tagName == null) {
                 return;
             }
@@ -151,7 +188,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
             }
 
             // 调用handler对cell进行处理
-            operateTableCellHandler.operate(document, table, row, cell, paramData, this.expressionCalculator);
+            operateTableCellHandler.operate(document, table, row, cell, paramData, this.expressionCalculator, this.documentParagraphFiller);
         }
 
     }
@@ -180,7 +217,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
     private void verifyAndInitParamData(Map<String, Object> paramData) {
 
         // 我们不允许用户使用这个key
-        if (paramData.get(CommonDataNameConstant.ARR_HISTORY) != null) {
+        if (paramData.get(ARR_HISTORY) != null) {
             logger.error("ARR_HISTORY cannot be used because some other information will be recorded");
             throw new IllegalArgumentException("ARR_HISTORY cannot be used because some other information will be recorded");
         }
@@ -188,8 +225,15 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
             logger.error("MERGE_ARR_INFO cannot be used because some other information will be recorded");
             throw new IllegalArgumentException("MERGE_ARR_INFO cannot be used because some other information will be recorded");
         }
+
+        if (paramData.get(ARR_HISTORY_ITEM) != null) {
+            logger.error("ARR_HISTORY_ITEM cannot be used because some other information will be recorded");
+            throw new IllegalArgumentException("ARR_HISTORY_ITEM cannot be used because some other information will be recorded");
+        }
         // 初始化记录数组插入历史的全链路变量
-        paramData.put(CommonDataNameConstant.ARR_HISTORY, new HashMap<String, ArrInfo>());
+        // key：tableIndex，vlale:{ key: rowIndex, value:ArrayInfo}
+        paramData.put(ARR_HISTORY, new HashMap<Integer, Map<String, ArrInfo>>());
+        paramData.put(ARR_HISTORY_ITEM, new HashMap<String, ArrInfo>());
         paramData.put(CommonDataNameConstant.MERGE_ARR_INFO, new ArrayList<MergeArrInfo>());
     }
 
