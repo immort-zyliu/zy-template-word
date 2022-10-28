@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static pers.lzy.template.word.common.TagParser.formatExpressionInMultiRuns;
 import static pers.lzy.template.word.utils.WordUtil.mergeRunText;
 
 /**
@@ -160,22 +161,45 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
         }
 
         for (XWPFParagraph paragraph : paras) {
-            List<XWPFRun> runs = paragraph.getRuns();
-
-            if (runs == null) {
-                continue;
-            }
-
-            mergeRunText(paragraph);
-
-            for (XWPFRun run : runs) {
-                doProcessParagraph(document, paragraph, run, paramData);
-            }
+            doProcessParagraph(document, paragraph, paramData);
         }
     }
 
-    private void doProcessParagraph(XWPFDocument document, XWPFParagraph paragraph, XWPFRun run, Map<String, Object> paramData) {
-        String content = run.text();
+    private void doProcessParagraph(XWPFDocument document, XWPFParagraph paragraph, Map<String, Object> paramData) {
+
+        if (paragraph == null) {
+            return;
+        }
+
+        String paragraphText = paragraph.getText();
+        if (StringUtils.isNotEmpty(paragraphText)) {
+            // 获取content中的标签
+            String tagName = TagParser.findContentTag(paragraphText);
+            if (tagName == null) {
+                return;
+            }
+
+            // 通过tag找到handler
+            OperateParagraphHandler operateParagraphHandler = this.operateParagraphHandlerTagMap.get(tagName);
+            if (operateParagraphHandler == null) {
+                logger.warn("No tag({}) handler found, skipped", tagName);
+                return;
+            }
+
+            // 去掉 段落中的 tagName (tag 标识)
+            TagParser.removeTagName(paragraph, tagName);
+
+
+            // 格式化 碎片 run
+            formatExpressionInMultiRuns(paragraph);
+
+
+            // 调用handler对cell进行处理
+            operateParagraphHandler.operate(document, paragraph, paramData, this.expressionCalculator);
+
+        }
+
+        /*String content = run.text();
         if (StringUtils.isNotEmpty(run.text())) {
             // 获取content中的标签
             String tagName = TagParser.findFirstTag(content);
@@ -192,7 +216,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
             // 调用handler对cell进行处理
             operateParagraphHandler.operate(document, run, paramData, this.expressionCalculator);
-        }
+        }*/
     }
 
     /**

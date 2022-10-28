@@ -1,10 +1,8 @@
 package pers.lzy.template.word.utils;
 
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTJc;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.apache.xmlbeans.StringEnumAbstractBase;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +38,52 @@ public class WordUtil {
         for (XWPFRun run : paragraph.getRuns()) {
             run.setText(null, 0);
         }
+    }
+
+    /**
+     * 插入一个run，并复制某个run的格式
+     *
+     * 本方法不做任何校验，错了就正常抛出异常
+     * @param paragraph      被操作的段落
+     * @param insertRunIndex 将这个run插入到 段落中的 run的索引
+     * @param sourceRunIndex 要复制哪个run的 格式？
+     * @param insertValue 被插入run中要存储哪些内容?
+     */
+    public static void insertRunAndCopyStyle(XWPFParagraph paragraph, int sourceRunIndex, int insertRunIndex, String insertValue) {
+
+        List<XWPFRun> runs = paragraph.getRuns();
+        XWPFRun sourceRun = runs.get(sourceRunIndex);
+
+        XWPFRun insertRun = paragraph.insertNewRun(insertRunIndex);
+        setRunValue(insertRun, insertValue);
+
+
+        // 复制格式
+        insertRun.setVerticalAlignment(sourceRun.getVerticalAlignment().toString());
+        insertRun.setBold(sourceRun.isBold());
+        insertRun.setCapitalized(sourceRun.isCapitalized());
+        insertRun.setCharacterSpacing(sourceRun.getCharacterSpacing());
+        insertRun.setColor(insertRun.getColor());
+        insertRun.setDoubleStrikethrough(insertRun.isDoubleStrikeThrough());
+        insertRun.setEmbossed(sourceRun.isEmbossed());
+        insertRun.setEmphasisMark(sourceRun.getEmphasisMark().toString());
+        insertRun.setFontFamily(sourceRun.getFontFamily());
+        insertRun.setFontSize(sourceRun.getFontSize());
+        insertRun.setImprinted(sourceRun.isImprinted());
+        insertRun.setItalic(sourceRun.isItalic());
+        insertRun.setKerning(sourceRun.getKerning());
+        insertRun.setLang(sourceRun.getLang());
+        insertRun.setShadow(sourceRun.isShadowed());
+        insertRun.setSmallCaps(sourceRun.isSmallCaps());
+        insertRun.setStrikeThrough(sourceRun.isStrikeThrough());
+        insertRun.setStyle(sourceRun.getStyle());
+        // insertRun.setSubscript(sourceRun.getSubscript());
+        insertRun.setTextHighlightColor(sourceRun.getTextHightlightColor().toString());
+        insertRun.setVanish(sourceRun.isVanish());
+        insertRun.setUnderlineThemeColor(sourceRun.getUnderlineThemeColor().toString());
+        insertRun.setUnderlineColor(sourceRun.getUnderlineColor());
+        insertRun.setTextScale(sourceRun.getTextScale());
+
     }
 
     /**

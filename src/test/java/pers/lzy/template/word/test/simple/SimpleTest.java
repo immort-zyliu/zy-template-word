@@ -21,7 +21,7 @@ import static pers.lzy.template.word.utils.WordUtil.writeFile;
 public class SimpleTest {
 
     public static void main(String[] args) throws Exception {
-        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\immort\\Desktop\\fff\\test.docx");
+        FileInputStream fileInputStream = new FileInputStream("C:\\Users\\immort\\Desktop\\fff\\11.docx");
         XWPFDocument doc = new XWPFDocument(fileInputStream);
 
 
@@ -32,7 +32,7 @@ public class SimpleTest {
         doFill(defaultTemplateWordFiller, doc);
 
 
-        writeFile(doc, new File("C:\\Users\\immort\\Desktop\\fff\\123132.docx"));
+        writeFile(doc, new File("C:\\Users\\immort\\Desktop\\fff\\1111111-test.docx"));
     }
 
     private static void doFill(DefaultTemplateWordFiller defaultTemplateWordFiller, XWPFDocument doc) {
