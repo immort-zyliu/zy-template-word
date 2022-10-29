@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static pers.lzy.template.word.common.TagParser.verifyHasExpression;
-import static pers.lzy.template.word.utils.WordUtil.setRunValue;
 
 /**
  * @author immort-liuzyj(zyliu)
@@ -149,7 +148,7 @@ public class ArrEvalOperateTableCellHandler extends AbstractOperateTableCellHand
         // 3. 判断是否应该插入行，如果成立，则进行行的插入。
         if (arrInfo.getInsertRowFlag()) {
             // 进行行的插入
-            WordUtil.addRows(table.getTable(), arrInfo.getStartRow(), arrInfo.getSize(), arrInfo.getStartRow() + 1);
+            WordUtil.addRows(table.getTable(), arrInfo.getStartRow(), arrInfo.getSize() - 1, arrInfo.getStartRow() + 1);
             //合并左侧的单元格，如资金详细信息左侧有个合并的资金信息的标题
             // 当然啦，只有左侧是合并单元格的时候，才会合并左侧的单元格
             // 还有一个条件，就是这是再插入arrMerge标签的时候

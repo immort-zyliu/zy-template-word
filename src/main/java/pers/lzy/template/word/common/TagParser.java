@@ -226,7 +226,7 @@ public class TagParser {
                         // 遍历删除废弃的run
                         for (int removeIndex = endExpressionRunIndex; removeIndex > removeStartIndex; removeIndex--) {
                             //角标移除后，runs会同步变动，直接继续处理i就可以
-                            log.info("移除下标：{}", removeIndex);
+                            log.debug("移除run下标：{}", removeIndex);
                             paragraph.removeRun(removeIndex);
                         }
 

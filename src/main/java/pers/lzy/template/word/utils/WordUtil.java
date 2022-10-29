@@ -81,7 +81,9 @@ public class WordUtil {
         targetRun.setEmbossed(sourceRun.isEmbossed());
         targetRun.setEmphasisMark(sourceRun.getEmphasisMark().toString());
         targetRun.setFontFamily(sourceRun.getFontFamily());
-        targetRun.setFontSize(sourceRun.getFontSize());
+        if (sourceRun.getFontSize() != -1) {
+            targetRun.setFontSize(sourceRun.getFontSize());
+        }
         targetRun.setImprinted(sourceRun.isImprinted());
         targetRun.setItalic(sourceRun.isItalic());
         targetRun.setKerning(sourceRun.getKerning());
@@ -90,7 +92,7 @@ public class WordUtil {
         targetRun.setSmallCaps(sourceRun.isSmallCaps());
         targetRun.setStrikeThrough(sourceRun.isStrikeThrough());
         targetRun.setStyle(sourceRun.getStyle());
-        // insertRun.setSubscript(sourceRun.getSubscript());
+        // ####insertRun.setSubscript(sourceRun.getSubscript());
         targetRun.setTextHighlightColor(sourceRun.getTextHightlightColor().toString());
         targetRun.setVanish(sourceRun.isVanish());
         targetRun.setUnderlineThemeColor(sourceRun.getUnderlineThemeColor().toString());
@@ -174,25 +176,24 @@ public class WordUtil {
                 newCell.setWidth(String.valueOf(sourceCell.getWidth()));
                 newCell.setWidthType(sourceCell.getWidthType());
                 newCell.getCTTc().setTcPr(sourceCell.getCTTc().getTcPr());
-                    /*
-                    //设置垂直居中
-                    newCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-                    //复制单元格的居中方式给新单元格
-                    CTPPr pPr = sourceCell.getCTTc().getPList().get(0).getPPr();
-                    if (pPr != null && pPr.getJc() != null && pPr.getJc().getVal() != null) {
-                        CTTc cttc = newCell.getCTTc();
-                        CTP ctp = cttc.getPList().get(0);
-                        CTPPr ctppr = ctp.getPPr();
-                        if (ctppr == null) {
-                            ctppr = ctp.addNewPPr();
-                        }
-                        CTJc ctjc = ctppr.getJc();
-                        if (ctjc == null) {
-                            ctjc = ctppr.addNewJc();
-                        }
-                        ctjc.setVal(pPr.getJc().getVal()); //水平居中
+
+                //设置垂直居中
+                // newCell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                //复制单元格的居中方式给新单元格
+                CTPPr pPr = sourceCell.getCTTc().getPList().get(0).getPPr();
+                if (pPr != null && pPr.getJc() != null && pPr.getJc().getVal() != null) {
+                    CTTc cttc = newCell.getCTTc();
+                    CTP ctp = cttc.getPList().get(0);
+                    CTPPr ctppr = ctp.getPPr();
+                    if (ctppr == null) {
+                        ctppr = ctp.addNewPPr();
                     }
-*/
+                    CTJc ctjc = ctppr.getJc();
+                    if (ctjc == null) {
+                        ctjc = ctppr.addNewJc();
+                    }
+                    ctjc.setVal(pPr.getJc().getVal());
+                }
                 //得到复制单元格的段落
                     /*List<XWPFParagraph> sourceParagraphs = sourceCell.getParagraphs();
                     if (StringUtils.isEmpty(sourceCell.getText())) {
@@ -254,6 +255,8 @@ public class WordUtil {
             }
 
             // 复制段落格式....
+            //复制段落样式给新段落
+            targetParagraph.getCTP().setPPr(sourceParagraph.getCTP().getPPr());
 
             List<XWPFRun> sourceRuns = sourceParagraph.getRuns();
             if (sourceRuns == null) {
@@ -282,7 +285,6 @@ public class WordUtil {
 
             }
         }
-
 
 
     }
