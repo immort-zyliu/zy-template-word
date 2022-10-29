@@ -1,6 +1,10 @@
 package pers.lzy.template.word.pojo;
 
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFTableCell;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author immort-liuzyj(zyliu)
@@ -23,5 +27,13 @@ public class WordCell {
 
     public XWPFTableCell getCell() {
         return cell;
+    }
+
+    public List<XWPFParagraph> paragraphs() {
+        if (cell == null) {
+            return new ArrayList<>();
+        }
+
+        return cell.getParagraphs();
     }
 }

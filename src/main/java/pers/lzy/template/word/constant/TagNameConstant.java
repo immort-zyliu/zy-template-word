@@ -12,5 +12,7 @@ public interface TagNameConstant {
 
     String ARR_TAG_NAME = "arr";
 
+    String TABLE_SIMPLE_TAG_NAME = "t-simple";
+
 
 }

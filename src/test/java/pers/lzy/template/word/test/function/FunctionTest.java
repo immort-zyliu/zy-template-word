@@ -10,6 +10,8 @@ import org.junit.Test;
 import pers.lzy.template.word.core.TemplateWordFiller;
 import pers.lzy.template.word.core.TemplateWordFillerFactory;
 import pers.lzy.template.word.test.pojo.ClassScore;
+import pers.lzy.template.word.test.pojo.Thesis;
+import pers.lzy.template.word.test.pojo.UserInfo;
 import pers.lzy.template.word.utils.WordUtil;
 
 import java.io.File;
@@ -90,8 +92,40 @@ public class FunctionTest {
         scoreList.add(new ClassScore.Score("赵六", 86D, 78D, 78D));
 
         classScore.setScore(scoreList);
+
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setAge(18);
+        userInfo.setNickname("liuzy");
+        userInfo.setAddress("中国北京市海淀区");
+        userInfo.setTelPhone("173300300030");
+        userInfo.setRemark("有车有房有钱，人生赢家");
+        userInfo.setSex(1);
+
+
+        res.put("userInfo", userInfo);
+
+        Thesis thesis = buildThesis();
+
+        res.put("thesis", thesis);
         return res;
 
 
+    }
+
+    private Thesis buildThesis() {
+        Thesis thesis = new Thesis();
+        thesis.setSubjectArgument("课题的研究界定重要包括三个方面：\n对国内外研究现状的分析材料一定要做好检索，查全资料、还要运用提纲挈领的语言来高度简明扼要的概括，要善于总结归纳。具体的说大体分步：一是要简要叙述收集到得资料的观点，二是要评论这些观点，有欠缺不深入的地方，三是针对这些缺欠的问题我要研究的观点是什么，也就是研究内容的深入部分。总体上可以说是“求全责备，一网打尽”。");
+        thesis.setProjectDesign("方案设计是设计中的重要阶段，它是一个极富有创造性的设计阶段，同时也是一个十分复杂的问题，它涉及到设计者的知识水平、经验、灵感和想象力等。\n" +
+                "SpringCloud\n" +
+                "K8s\n" +
+                "ReactJs");
+        thesis.setProgressPlan("1、1- 3周：毕业实习、收集资料、撰写开题报告（3周）； 2、4周：工艺论证（1周）；\n" +
+                "3、5-8周：工艺计算及设备设计、选型计算（4周）； 4、9-12周：绘图（4周）；\n" +
+                "5、13周：技术经济分析及非工艺部分（1周）； 6、14：编制设计说明书（1周）；\n" +
+                "7、15周：上交毕业设计说明书，答辩评审（1周）； 8、16周：毕业设计答辩（1周）。");
+        thesis.setOpinionsInstructors("同意开题");
+        thesis.setCommentsPanel("该生xxx牛牛，同意开题");
+        return thesis;
     }
 }

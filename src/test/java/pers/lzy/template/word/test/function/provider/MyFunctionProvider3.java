@@ -2,6 +2,7 @@ package pers.lzy.template.word.test.function.provider;
 
 import com.google.auto.service.AutoService;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.time.DateUtils;
 import pers.lzy.template.word.provider.FunctionProvider;
 import pers.lzy.template.word.test.function.func.ScoreUtil;
 
@@ -31,6 +32,7 @@ public class MyFunctionProvider3 implements FunctionProvider {
         res.put("Lists", Lists.class);
         // 注册到全局
         res.put("ScoreUtil", ScoreUtil.class);
+        res.put("DateUtils", DateUtils.class);
         return res;
     }
 }
