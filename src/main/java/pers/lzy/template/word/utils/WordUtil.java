@@ -1,8 +1,10 @@
 package pers.lzy.template.word.utils;
 
 import org.apache.poi.xwpf.usermodel.*;
-import org.apache.xmlbeans.StringEnumAbstractBase;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTJc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pers.lzy.template.word.common.TagParser;
@@ -16,7 +18,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author immort-liuzyj(zyliu)
@@ -76,8 +77,8 @@ public class WordUtil {
         targetRun.setBold(sourceRun.isBold());
         targetRun.setCapitalized(sourceRun.isCapitalized());
         targetRun.setCharacterSpacing(sourceRun.getCharacterSpacing());
-        targetRun.setColor(targetRun.getColor());
-        targetRun.setDoubleStrikethrough(targetRun.isDoubleStrikeThrough());
+        targetRun.setColor(sourceRun.getColor());
+        targetRun.setDoubleStrikethrough(sourceRun.isDoubleStrikeThrough());
         targetRun.setEmbossed(sourceRun.isEmbossed());
         targetRun.setEmphasisMark(sourceRun.getEmphasisMark().toString());
         targetRun.setFontFamily(sourceRun.getFontFamily());
