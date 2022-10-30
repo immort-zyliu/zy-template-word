@@ -86,10 +86,20 @@ public class ArrEvalOperateTableCellHandler extends AbstractOperateTableCellHand
     }
 
     private void fillArrDataToTable(WordTable table, WordCell cell, TextWordCell textWordCell, int traverseNumber, ArrInfo arrInfo, Map<String, Object> params, ExpressionCalculator expressionCalculator) {
+
+        boolean blankFlag = false;
+
+        if (traverseNumber <= 0) {
+            // 此时就说明没有数组数据，或者是数组元素个数为0
+            // 我们就要设置 空 flag 为true; 同时让其遍历一次，使其将当前单元格制空（因为没有值嘛）
+            traverseNumber ++;
+            blankFlag = true;
+        }
+
         for (int index = 0; index < traverseNumber; index++) {
 
             // 克隆textWordCell，并使用表达式计算内容
-            TextWordCell processedTextWordCell = this.cloneAndCalculate(textWordCell, expressionCalculator, params, index);
+            TextWordCell processedTextWordCell = this.cloneAndCalculate(textWordCell, expressionCalculator, params, index, blankFlag);
 
 
             // 将克隆，计算后的 textWordCell，弄到新的单元格中。
@@ -103,7 +113,7 @@ public class ArrEvalOperateTableCellHandler extends AbstractOperateTableCellHand
         }
     }
 
-    private TextWordCell cloneAndCalculate(TextWordCell textWordCell, ExpressionCalculator expressionCalculator, Map<String, Object> params, int paramArrIndex) {
+    private TextWordCell cloneAndCalculate(TextWordCell textWordCell, ExpressionCalculator expressionCalculator, Map<String, Object> params, int paramArrIndex, boolean blankFlag) {
 
         TextWordCell textWordCellClone = JSON.parseObject(JSON.toJSONString(textWordCell), TextWordCell.class);
 
@@ -119,6 +129,13 @@ public class ArrEvalOperateTableCellHandler extends AbstractOperateTableCellHand
             }
 
             for (WordRun run : runs) {
+                if (blankFlag) {
+                    // 说明要填充为空
+                    run.setValue(this.formatCellValue(null));
+                    // 本次循环结束，让其进行下一次循环
+                    continue;
+                }
+
                 String expression = run.getValue();
                 // 说明没有解析出来表达式
                 if (!verifyHasExpression(expression)) {

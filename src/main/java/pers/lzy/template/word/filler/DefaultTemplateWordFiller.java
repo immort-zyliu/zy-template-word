@@ -297,7 +297,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
         private void initOperateTableCellHandlerTagMap() {
 
-            logger.info(" init OperateTableCellHandlerTagMap");
+            logger.info("init OperateTableCellHandlerTagMap");
             this.operateTableCellHandlerTagMap = this.operateTableCellHandlerHolderList.stream()
                     .collect(Collectors.toConcurrentMap(
                             OperateTableCellHandlerHolder::getHandlerTagName,
@@ -323,7 +323,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
         }
 
         private void initOperateParagraphHandlerHolderList() {
-            logger.info(" init OperateParagraphHandlerHolderList");
+            logger.info("init OperateParagraphHandlerHolderList");
             this.operateParagraphHandlerHolderList = this.operateParagraphHandlerList.stream()
                     .map(cellHandler -> {
                         TagOperateHandler tagOperateHandler = cellHandler.getClass().getAnnotation(TagOperateHandler.class);
@@ -338,7 +338,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
         private void initOperateParagraphHandlerTagMap() {
 
-            logger.info(" init OperateParagraphHandlerTagMap");
+            logger.info("init OperateParagraphHandlerTagMap");
             this.operateParagraphHandlerTagMap = this.operateParagraphHandlerHolderList.stream()
                     .collect(Collectors.toConcurrentMap(
                             OperateParagraphHandlerHolder::getHandlerTagName,
