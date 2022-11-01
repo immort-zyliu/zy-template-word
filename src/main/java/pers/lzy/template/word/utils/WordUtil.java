@@ -1,10 +1,7 @@
 package pers.lzy.template.word.utils;
 
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTJc;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTPPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTc;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pers.lzy.template.word.common.TagParser;
@@ -73,18 +70,29 @@ public class WordUtil {
 
     private static void copyRunStyle(XWPFRun sourceRun, XWPFRun targetRun) {
         // 复制格式
-        targetRun.setVerticalAlignment(sourceRun.getVerticalAlignment().toString());
+
+        STVerticalAlignRun.Enum verticalAlignment = sourceRun.getVerticalAlignment();
+        if (verticalAlignment != null) {
+            targetRun.setVerticalAlignment(verticalAlignment.toString());
+        }
+
         targetRun.setBold(sourceRun.isBold());
         targetRun.setCapitalized(sourceRun.isCapitalized());
         targetRun.setCharacterSpacing(sourceRun.getCharacterSpacing());
         targetRun.setColor(sourceRun.getColor());
         targetRun.setDoubleStrikethrough(sourceRun.isDoubleStrikeThrough());
         targetRun.setEmbossed(sourceRun.isEmbossed());
-        targetRun.setEmphasisMark(sourceRun.getEmphasisMark().toString());
+
+        STEm.Enum emphasisMark = sourceRun.getEmphasisMark();
+        if (emphasisMark != null) {
+            targetRun.setEmphasisMark(emphasisMark.toString());
+        }
+
         targetRun.setFontFamily(sourceRun.getFontFamily());
         if (sourceRun.getFontSize() != -1) {
             targetRun.setFontSize(sourceRun.getFontSize());
         }
+
         targetRun.setImprinted(sourceRun.isImprinted());
         targetRun.setItalic(sourceRun.isItalic());
         targetRun.setKerning(sourceRun.getKerning());
@@ -94,9 +102,26 @@ public class WordUtil {
         targetRun.setStrikeThrough(sourceRun.isStrikeThrough());
         targetRun.setStyle(sourceRun.getStyle());
         // ####insertRun.setSubscript(sourceRun.getSubscript());
-        targetRun.setTextHighlightColor(sourceRun.getTextHightlightColor().toString());
+
+        STHighlightColor.Enum textHightlightColor = sourceRun.getTextHightlightColor();
+        if (textHightlightColor != null) {
+            targetRun.setTextHighlightColor(textHightlightColor.toString());
+        }
+
+        UnderlinePatterns underline = sourceRun.getUnderline();
+        if (underline != null) {
+            targetRun.setUnderline(underline);
+        }
+
+
         targetRun.setVanish(sourceRun.isVanish());
-        targetRun.setUnderlineThemeColor(sourceRun.getUnderlineThemeColor().toString());
+
+        STThemeColor.Enum underlineThemeColor = sourceRun.getUnderlineThemeColor();
+        if (underlineThemeColor!= null) {
+            targetRun.setUnderlineThemeColor(underlineThemeColor.toString());
+        }
+
+
         targetRun.setUnderlineColor(sourceRun.getUnderlineColor());
         targetRun.setTextScale(sourceRun.getTextScale());
     }
