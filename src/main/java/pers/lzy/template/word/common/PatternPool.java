@@ -12,7 +12,7 @@ public class PatternPool {
      * 占位符的正则：
      * eg :
      * ${name}
-     *
+     * <p>
      * author:zyliu-immort
      */
     public final static String RE_PLACEHOLDER = "\\$\\{(.+?)\\}";
@@ -21,10 +21,25 @@ public class PatternPool {
      * 数组变量链的正则：
      * eg： school.people[].name
      * return: school.people
-     *
+     * <p>
      * author:zyliu-immort
      */
     public final static String RE_ARRAY_VARIABLE_CHAIN = "([a-zA-Z]\\w+\\.)*[a-zA-Z]\\w+\\[\\]";
+
+    /**
+     * 数组变量链的正则：
+     * eg： school.people[].name
+     * return: school.people[]
+     * <p>
+     * eg: school."中文".data[].name
+     * return school."中文".data[]
+     * <p>
+     * <p>
+     * eg:
+     * <p>
+     * author:zyliu-immort
+     */
+    public final static String RE_ARRAY_CHINESE_VARIABLE_CHAIN = "([\\w|\\u4e00-\\u9fa5|\\\"]+\\s*\\.\\s*)*[\\w|\\u4e00-\\u9fa5|\\\"]+\\[\\]";
 
     /**
      * 正则表达式匹配中文汉字

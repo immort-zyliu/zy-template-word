@@ -172,7 +172,7 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
 
         // 解析表达式中的内容。
         for (String allPath : foundAllPath) {
-            List<String> allMatch = ReUtils.findAll(PatternPool.RE_ARRAY_VARIABLE_CHAIN, allPath, 0);
+            List<String> allMatch = ReUtils.findAll(PatternPool.RE_ARRAY_CHINESE_VARIABLE_CHAIN, allPath, 0);
             // 添加的同时，去掉"[]"
             allMatch.forEach(ele -> objExprSet.add(ele.replaceAll("\\[]", "")));
         }
