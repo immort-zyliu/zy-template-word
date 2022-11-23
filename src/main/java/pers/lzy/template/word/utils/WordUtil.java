@@ -117,7 +117,7 @@ public class WordUtil {
         targetRun.setVanish(sourceRun.isVanish());
 
         STThemeColor.Enum underlineThemeColor = sourceRun.getUnderlineThemeColor();
-        if (underlineThemeColor!= null) {
+        if (underlineThemeColor != null) {
             targetRun.setUnderlineThemeColor(underlineThemeColor.toString());
         }
 
@@ -371,5 +371,64 @@ public class WordUtil {
         }
 
         return new TextWordCell(wordParagraphs);
+    }
+
+
+    /**
+     * 跨列合并
+     */
+    public static void mergeCellsHorizontal(XWPFTable table, int row, int fromCell, int toCell) {
+        for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
+            XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
+            if (cellIndex == fromCell) {
+                // The first merged cell is set with RESTART merge value
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+            } else {
+                // Cells which join (merge) the first one, are set with CONTINUE
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+            }
+        }
+    }
+
+    /**
+     * 跨行合并
+     * http://stackoverflow.com/questions/24907541/row-span-with-xwpftable
+     */
+    public static void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
+        if (fromRow == toRow) {
+            return;
+        }
+        for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
+            XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
+            if (rowIndex == fromRow) {
+                // The first merged cell is set with RESTART merge value
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.RESTART);
+            } else {
+                // Cells which join (merge) the first one, are set with CONTINUE
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.CONTINUE);
+            }
+        }
+    }
+
+    /**
+     * 获取单元格
+     *
+     * @param table    表格
+     * @param rowIndex 行索引
+     * @param colIndex 列索引
+     * @return 值
+     */
+    public static String getTableCellValue(XWPFTable table, Integer rowIndex, Integer colIndex) {
+
+        XWPFTableRow row = table.getRow(rowIndex);
+        if (row == null) {
+            return "";
+        }
+
+        XWPFTableCell cell = row.getCell(colIndex);
+        if (cell == null) {
+            return "";
+        }
+        return cell.getText();
     }
 }

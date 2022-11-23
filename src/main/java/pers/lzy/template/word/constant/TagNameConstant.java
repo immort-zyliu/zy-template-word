@@ -12,6 +12,11 @@ public interface TagNameConstant {
 
     String ARR_TAG_NAME = "arr";
 
+    /**
+     * arr 合并标签
+     */
+    String M_ARR_TAG_NAME = "m-arr";
+
     String TABLE_SIMPLE_TAG_NAME = "t-simple";
 
 

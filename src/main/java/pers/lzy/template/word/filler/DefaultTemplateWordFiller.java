@@ -13,6 +13,7 @@ import pers.lzy.template.word.common.TagParser;
 import pers.lzy.template.word.constant.CommonDataNameConstant;
 import pers.lzy.template.word.core.DocumentParagraphFiller;
 import pers.lzy.template.word.core.ExpressionCalculator;
+import pers.lzy.template.word.core.OperateWordPostProcessor;
 import pers.lzy.template.word.core.TemplateWordFiller;
 import pers.lzy.template.word.core.filler.DefaultDocumentParagraphFiller;
 import pers.lzy.template.word.core.handler.OperateParagraphHandler;
@@ -26,7 +27,6 @@ import pers.lzy.template.word.provider.FillDataProvider;
 import pers.lzy.template.word.provider.FunctionProvider;
 import pers.lzy.template.word.utils.SpiLoader;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +66,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
      */
     private final Map<String, OperateTableCellHandler> operateTableCellHandlerTagMap;
 
+    private final List<OperateWordPostProcessor> operateWordPostProcessorList;
 
     public DefaultTemplateWordFiller(Builder builder) {
         int expressionCacheSize = builder.expressionCacheSize;
@@ -80,6 +81,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
         this.operateParagraphHandlerTagMap = builder.operateParagraphHandlerTagMap;
         this.operateTableCellHandlerTagMap = builder.operateTableCellHandlerTagMap;
         this.documentParagraphFiller = DefaultDocumentParagraphFiller.getInstance(operateParagraphHandlerTagMap, this.expressionCalculator);
+        this.operateWordPostProcessorList = builder.operateWordPostProcessorList;
     }
 
     /**
@@ -102,6 +104,14 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
         processParagraphs(document, paramData);
 
         processTables(document, paramData);
+
+        postProcessWord(document, paramData);
+    }
+
+    private void postProcessWord(XWPFDocument document, Map<String, Object> paramData) {
+        logger.info("post process word doc");
+        operateWordPostProcessorList
+                .forEach(postProcessor -> postProcessor.operatePostProcess(document, paramData, this.expressionCalculator));
     }
 
     private void processTables(XWPFDocument document, Map<String, Object> paramData) {
@@ -234,7 +244,9 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
         // key：tableIndex，vlale:{ key: rowIndex, value:ArrayInfo}
         paramData.put(ARR_HISTORY, new HashMap<Integer, Map<String, ArrInfo>>());
         paramData.put(ARR_HISTORY_ITEM, new HashMap<String, ArrInfo>());
-        paramData.put(CommonDataNameConstant.MERGE_ARR_INFO, new ArrayList<MergeArrInfo>());
+        // key:tableIndex
+        // value: MergeArrInfo
+        paramData.put(CommonDataNameConstant.MERGE_ARR_INFO, new HashMap<Integer,List<MergeArrInfo>>());
     }
 
     /**
@@ -273,6 +285,8 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
 
         private List<OperateTableCellHandlerHolder> operateTableCellHandlerHolderList;
 
+        private final List<OperateWordPostProcessor> operateWordPostProcessorList;
+
         public Builder() {
             functions = new HashMap<>();
             functions.putAll(loadFunctions());
@@ -283,6 +297,7 @@ public class DefaultTemplateWordFiller implements TemplateWordFiller {
             jxltEngine = jexlEngine.createJxltEngine();
             this.operateParagraphHandlerList = this.loadInstanceByInterface(OperateParagraphHandler.class);
             this.operateTableCellHandlerList = this.loadInstanceByInterface(OperateTableCellHandler.class);
+            this.operateWordPostProcessorList = this.loadInstanceByInterface(OperateWordPostProcessor.class);
             // 初始化辅助handler或者是map的信息
             this.initAuxiliaryInfo();
 

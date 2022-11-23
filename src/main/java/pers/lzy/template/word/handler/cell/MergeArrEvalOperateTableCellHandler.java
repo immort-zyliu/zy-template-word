@@ -8,13 +8,12 @@ import pers.lzy.template.word.core.handler.OperateTableCellHandler;
 
 /**
  * @author immort-liuzyj(zyliu)
- * @since 2022/11/22  17:37
- * arr标签
+ * @since 2022/11/22  17:39
  */
 @HandlerOrder(20000)
-@TagOperateHandler(tagName = TagNameConstant.ARR_TAG_NAME)
+@TagOperateHandler(tagName = TagNameConstant.M_ARR_TAG_NAME)
 @AutoService(OperateTableCellHandler.class)
-public class ArrEvalOperateTableCellHandler extends AbstractArrEvalOperateTableCellHandler {
+public class MergeArrEvalOperateTableCellHandler extends AbstractArrEvalOperateTableCellHandler {
     /**
      * 是否需要合并相同单元格
      *
@@ -22,6 +21,6 @@ public class ArrEvalOperateTableCellHandler extends AbstractArrEvalOperateTableC
      */
     @Override
     protected boolean mergeArrCell() {
-        return false;
+        return true;
     }
 }
