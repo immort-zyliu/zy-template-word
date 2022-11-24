@@ -4,13 +4,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.jexl3.JexlException;
 import org.apache.commons.jexl3.JxltEngine;
 import org.apache.commons.jexl3.MapContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pers.lzy.template.word.common.PatternPool;
-import pers.lzy.template.word.exception.CalculateException;
 import pers.lzy.template.word.core.ExpressionCalculator;
+import pers.lzy.template.word.exception.CalculateException;
 import pers.lzy.template.word.utils.ReUtils;
 
 import javax.annotation.Nonnull;
@@ -133,7 +134,7 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
         Set<String> objExprSet = this.getObjExpr(expressionStr);
 
         if (CollectionUtils.isEmpty(objExprSet)) {
-            logger.warn("Array expression not found...eg : school.people[]");
+            logger.warn("Array expression not found...eg : school.people[]; expression:{}", expressionStr);
             return new ArrayList<>();
         }
 
@@ -141,9 +142,16 @@ public class Jxel3ExpressionCalculator implements ExpressionCalculator {
         Collection<?> minSizeCollection = new ArrayList<>();
 
         for (String objExpr : objExprSet) {
-            Object property = jxltEngine.getEngine().getProperty(calculateParam, objExpr);
+            Object property;
+            try {
+                property = jxltEngine.getEngine().getProperty(calculateParam, objExpr);
+            } catch (JexlException.Tokenization e) {
+                // 当根据表达式去 对象中取值的时候，如果表达式有误，则可能会抛出此异常
+                // 异常不够明确，所以我们这里信息给的精准一点
+                throw new CalculateException("expression error; expression: " + expressionStr + ";" + "objExpr is:" + objExpr, e);
+            }
             if (!(property instanceof Collection)) {
-                logger.warn("Expression maps are not subclasses of Collection");
+                logger.warn("Expression maps are not subclasses of Collection; expression:{}; objExpr is:{}", expressionStr, objExpr);
                 continue;
             }
             int currentSize = ((Collection<?>) property).size();
