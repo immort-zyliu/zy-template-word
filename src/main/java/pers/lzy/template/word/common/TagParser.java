@@ -217,9 +217,11 @@ public class TagParser {
 
                             // 则复制出来一个run(格式复制此run的)，将剩余字符放入新run中
                             // 将run插入到 $所在run的后面。
-                            insertRunAndCopyStyle(paragraph, outerCurIndex, startCharRunIndex + 1, outerCurRunText.substring(outerCurIndex + 1));
+                            insertRunAndCopyStyle(paragraph, curRunIndex, startCharRunIndex + 1, outerCurRunText.substring(outerCurIndex + 1));
                             // 删除废弃的run的时候，不包含当前添加的run,所以遍历废弃run的时候，索引要注意一下
                             removeStartIndex++;
+                            // 结束位置也要加一个，因为我们添加了一行
+                            endExpressionRunIndex++;
                         }
 
 
